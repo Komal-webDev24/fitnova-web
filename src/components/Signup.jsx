@@ -22,17 +22,17 @@ const Signup = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5000/api/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          fullName: name, // Backend Schema se match karne ke liye 'fullName' use kiya
-          email: email,
-          password: password,
-        }),
-      });
+      const response = await fetch('https://fitnova-backend-vv6q.onrender.com/api/register', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      fullName: name,
+      email: email,
+      password: password,
+    }),
+});
 
       const data = await response.json();
 
