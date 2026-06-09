@@ -88,7 +88,7 @@ const ProfileSetup = () => {
     setSuccess(false);
 
     try {
-      const response = await fetch('http://localhost:5000/api/profile-setup', {
+   const response = await fetch('https://fitnova-backend-vv6q.onrender.com/api/profile-setup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
