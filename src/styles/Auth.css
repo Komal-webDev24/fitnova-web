@@ -1,0 +1,50 @@
+/* src/styles/Auth.css */
+.auth-page-container {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;    /* Center vertically */
+  justify-content: center; /* Center horizontally */
+  background-color: #000;  /* Pure Black */
+  margin: 0;
+  padding: 0;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 360px; /* Fixed width */
+  text-align: center;
+  padding: 20px;
+}
+
+.brand-name {
+  font-size: 3rem;
+  font-weight: 900;
+  font-style: italic;
+  color: #fff;
+  margin-bottom: 5px;
+}
+
+.auth-input {
+  width: 100%;
+  background: #111;
+  border: 1.5px solid #222;
+  border-radius: 100px; /* Oval shape */
+  padding: 16px 25px;
+  color: white;
+  margin-bottom: 15px;
+  outline: none;
+  box-sizing: border-box; /* Width fix */
+}
+
+.auth-button {
+  width: 100%;
+  background: #8B2E2E; /* Maroon color */
+  color: white;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 16px;
+  border-radius: 100px; /* Oval button */
+  border: none;
+  cursor: pointer;
+}

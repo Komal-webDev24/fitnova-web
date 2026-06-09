@@ -1,0 +1,192 @@
+/* WorkoutPlans.css – maroon #800000 + white theme, 2‑column grid */
+
+.wp_page_wrapper {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #f0f0f0;
+  overflow-x: hidden;
+}
+
+/* Single blurred background (dumbbell‑press, dark canvas) */
+.wp_page_bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: blur(10px);
+  z-index: -2;
+}
+
+.wp_page_bg::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: -1;
+}
+
+/* Main container */
+.wp_page_container {
+  position: relative;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px 16px;
+  z-index: 10;
+}
+
+/* Back button (white, subtle) */
+.wp_page_back_btn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-bottom: 16px;
+}
+
+.wp_page_back_btn:hover {
+  color: #ccc;
+}
+
+/* Header (white, centered) */
+.wp_page_header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.wp_page_title {
+  margin: 0 0 8px 0;
+  font-size: 1.8rem;
+  font-weight: 500;
+  color: #fff;
+}
+
+.wp_page_subtitle {
+  margin: 0;
+  font-size: 1rem;
+  color: #eee;
+}
+
+/* Timer section (dark semi‑transparent) */
+.wp_page_timer_section {
+  background: rgba(30, 30, 30, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.wp_page_timer_name {
+  margin: 0 0 6px 0;
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: #fff;
+}
+
+.wp_page_timer_display {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 6px 0;
+}
+
+.wp_page_timer_tip {
+  margin: 0 0 10px 0;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+/* Timer button: maroon #800000 with white text + hover */
+.wp_page_timer_btn {
+  padding: 8px 14px;
+  background-color: #800000; /* maroon */
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.wp_page_timer_btn:hover {
+  background-color: #a00000; /* lighter maroon */
+}
+
+/* Workout grid: explicitly 2‑column on desktop, 1 on mobile */
+.wp_page_workouts_grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 columns instead of auto‑fit */
+  gap: 12px;
+  margin-top: 12px;
+}
+
+/* On mobile, switch to 1 column */
+@media (max-width: 768px) {
+  .wp_page_workouts_grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Workout card (sleek rectangle, semi‑transparent dark bg) */
+.wp_page_workout_card {
+  background: rgba(30, 30, 30, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Card text info */
+.wp_page_workout_info {
+  flex-grow: 1;
+}
+
+.wp_page_workout_name {
+  margin: 0 0 4px 0;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #fff;
+}
+
+.wp_page_workout_target {
+  margin: 0 0 4px 0;
+  font-size: 0.85rem;
+  color: #ccc;
+}
+
+.wp_page_workout_tip {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #bbb;
+}
+
+/* START button: maroon #800000 with white text + hover */
+.wp_page_start_btn {
+  padding: 6px 12px;
+  background-color: #800000; /* maroon */
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  min-width: 70px;
+  text-align: center;
+}
+
+.wp_page_start_btn:hover {
+  background-color: #a00000; /* lighter maroon */
+}
