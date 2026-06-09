@@ -32,51 +32,39 @@ const Dashboard = () => {
       return;
     }
 
-    const fetchUserData = async () => {
-      setLoading(true);
-      setError('');
+  const fetchUserData = async () => {
+  setLoading(true);
+  setError('');
 
-      try {
-        const response = await fetch(`https://fitnova-backend-vv6q.onrender.com/api/user/${userId}`);
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch user data');
-        }
+  try {
+    // Sirf EK baar fetch likhein
+    const response = await fetch(`https://fitnova-backend-vv6q.onrender.com/api/user/${userId}`);
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch user data');
+    }
 
-        const data = await response.json();
+    const data = await response.json();
 
-        if (data.user) {
-          setUserName(data.user.fullName);
-          localStorage.setItem('userName', data.user.fullName);
-          setUserStats({
-            weight: data.user.weight,
-            height: data.user.height,
-            fitnessGoal: data.user.fitnessGoal,
-            bmi: data.user.bmi || calculateBMI(data.user.weight, data.user.height)
-          });
-        }
-      } catch (err) {
-        console.error('Error:', err);
-        setError('Unable to load user data. Showing cached values.');
-        
-        const cachedWeight = localStorage.getItem('userWeight');
-        const cachedHeight = localStorage.getItem('userHeight');
-        const cachedGoal = localStorage.getItem('userGoal');
-        const cachedName = localStorage.getItem('userName');
-
-        if (cachedName) setUserName(cachedName);
-        if (cachedWeight || cachedHeight) {
-          setUserStats({
-            weight: cachedWeight ? parseFloat(cachedWeight) : null,
-            height: cachedHeight ? parseFloat(cachedHeight) : null,
-            fitnessGoal: cachedGoal || null,
-            bmi: calculateBMI(cachedWeight ? parseFloat(cachedWeight) : null, cachedHeight ? parseFloat(cachedHeight) : null)
-          });
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
+    // Data milne par yahan update karein
+    if (data.user) {
+      setUserName(data.user.fullName);
+      localStorage.setItem('userName', data.user.fullName);
+      
+      setUserStats({
+        weight: data.user.weight,
+        height: data.user.height,
+        fitnessGoal: data.user.fitnessGoal,
+        bmi: data.user.bmi || calculateBMI(data.user.weight, data.user.height)
+      });
+    }
+  } catch (err) {
+    console.error('Error:', err);
+    setError('Unable to load user data.');
+  } finally {
+    setLoading(false);
+  }
+};
 
     fetchUserData();
   }, [userId, navigate]);
