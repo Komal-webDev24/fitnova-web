@@ -1,11 +1,14 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import Footer from './Footer'; // Path sahi hai, kyunki ye dono components folder mein hain
 
 function LandingPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="relative h-screen w-full overflow-hidden font-sans bg-black">
+    // 'flex flex-col min-h-screen' add kiya hai taaki Footer niche fix rahe
+    <div className="relative min-h-screen w-full flex flex-col font-sans bg-black">
+      
       {/* Background Image with Overlay */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -16,10 +19,9 @@ function LandingPage() {
         <div className="absolute inset-0 bg-black/70"></div>
       </div>
 
-      {/* Main Content */}
-      <div className="relative z-10 flex flex-col items-center justify-center h-full px-6 text-center text-white">
+      {/* Main Content: 'flex-grow' diya hai taaki ye beech mein rahe */}
+      <div className="relative z-10 flex-grow flex flex-col items-center justify-center h-full px-6 text-center text-white">
         
-        {/* NEW CLEAN LOGO (No "H" Error) */}
         <div className="flex flex-col items-center mb-10">
           <svg width="100" height="80" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
             <defs>
@@ -46,7 +48,6 @@ function LandingPage() {
           </p>
         </div>
 
-        {/* Text Section */}
         <div className="max-w-xl mb-12">
           <h2 className="text-3xl md:text-4xl font-bold leading-tight mb-4">
             Transform Your <span className="text-orange-400">Body & Mind</span>
@@ -56,7 +57,6 @@ function LandingPage() {
           </p>
         </div>
 
-        {/* Start Button */}
         <button 
           onClick={() => navigate('/login')}
           className="bg-white text-black font-extrabold py-4 px-12 rounded-full text-xl hover:bg-orange-500 hover:text-white transition-all shadow-xl"
@@ -64,9 +64,11 @@ function LandingPage() {
           Get Started
         </button>
       </div>
+
+      {/* Footer - Ab ye hamesha niche rahega */}
+      <Footer />
     </div>
   );
 }
 
-// YEH LINE SABSE ZARURI HAI (Missing thi isliye error aa raha tha)
 export default LandingPage;

@@ -1,0 +1,33 @@
+.footer {
+  width: 100%;
+  background-color: transparent; 
+  border-top: none; /* Border puri tarah hata di */
+  padding: 20px 0 30px 0; /* Neeche se padding 30px kar di taaki scrollbar se door rahe */
+  font-family: 'Inter', sans-serif;
+  z-index: 1000;
+  margin-top: auto; 
+}
+
+.footer-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.copyright,
+.credit {
+  font-size: 13px;
+  color: #ffffff; /* Text color white kar diya taaki background par saaf dikhe */
+  margin: 0;
+  font-weight: 400;
+  /* Text shadow add kiya taaki dark background par readability badhe */
+  text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.credit {
+  color: #e5e7eb; /* Thoda lighter shade */
+}
