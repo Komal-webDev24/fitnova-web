@@ -7,38 +7,50 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
     try {
-    // Naya:
-const response = await fetch('https://fitnova-backend-vv6q.onrender.com/api/login', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ email, password })
-});
+      const response = await fetch('https://fitnova-backend-vv6q.onrender.com/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email.trim(),
+          password,
+        }),
+      });
 
-      const data = await response.json();
+      const contentType = response.headers.get('content-type') || '';
+      const data = contentType.includes('application/json')
+        ? await response.json()
+        : await response.text();
 
-      if (response.ok) {
-        localStorage.setItem('userId', data.user.id);
-        localStorage.setItem('userName', data.user.fullName);
-        localStorage.setItem('userEmail', data.user.email);
-        localStorage.setItem('profileComplete', String(data.user.profileComplete));
+      if (!response.ok) {
+        setError(data?.error || 'Login failed');
+        return;
+      }
 
-        if (data.user.profileComplete) {
-          navigate('/dashboard');
-        } else {
-          navigate('/profile-setup');
-        }
+      localStorage.setItem('userId', data.user.id);
+      localStorage.setItem('userName', data.user.fullName);
+      localStorage.setItem('userEmail', data.user.email);
+      localStorage.setItem('profileComplete', String(data.user.profileComplete));
+
+      if (data.user.profileComplete) {
+        navigate('/dashboard');
       } else {
-        setError(data.error || 'Login failed');
+        navigate('/profile-setup');
       }
     } catch (err) {
       console.error('Login error:', err);
       setError('Server se connect nahi ho paya. Backend check karo.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -71,10 +83,13 @@ const response = await fetch('https://fitnova-backend-vv6q.onrender.com/api/logi
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          <button type="submit" className="auth-button">
-            Login Now
+          <button type="submit" className="auth-button" disabled={loading}>
+            {loading ? 'Logging in...' : 'Login Now'}
           </button>
-          <p>Don't have an account? <Link to="/signup">Sign Up here</Link></p>
+
+          <p>
+            Don't have an account? <Link to="/signup">Sign Up here</Link>
+          </p>
         </form>
 
         <p>

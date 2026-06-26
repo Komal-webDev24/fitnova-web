@@ -4,45 +4,64 @@ import '../styles/Auth.css';
 
 const Signup = () => {
   const navigate = useNavigate();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    password: '',
+  });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
 
   const handleSignup = async (e) => {
     e.preventDefault();
+    setError('');
 
-    if (password.length < 6) {
-      alert('Password must be at least 6 characters long!');
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters long!');
       return;
     }
 
     setLoading(true);
 
     try {
-    // Purana: const response = await fetch('http://localhost:5000/api/register', ...
-// Naya:
-const response = await fetch('https://fitnova-backend-vv6q.onrender.com/api/register', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(formData)
-});
+      const response = await fetch('https://fitnova-backend-vv6q.onrender.com/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fullName: formData.fullName.trim(),
+          email: formData.email.trim(),
+          password: formData.password,
+        }),
+      });
 
-      const data = await response.json();
+      const contentType = response.headers.get('content-type') || '';
+      const data = contentType.includes('application/json')
+        ? await response.json()
+        : await response.text();
 
-      if (response.ok) {
-        localStorage.setItem('userName', data.user.fullName);
-        localStorage.setItem('userEmail', data.user.email);
-        localStorage.setItem('userId', data.user.id);
-        localStorage.setItem('profileComplete', String(data.user.profileComplete));
-
-        navigate('/profile-setup');
-      } else {
-        alert(data.error || 'Signup failed. Please try again.');
+      if (!response.ok) {
+        setError(data?.error || 'Signup failed. Please try again.');
+        return;
       }
+
+      localStorage.setItem('userName', data.user.fullName);
+      localStorage.setItem('userEmail', data.user.email);
+      localStorage.setItem('userId', data.user.id);
+      localStorage.setItem('profileComplete', String(data.user.profileComplete));
+
+      navigate('/profile-setup');
     } catch (error) {
-      console.error('Network error:', error);
-      alert('Unable to connect to server. Please check if your Backend is running.');
+      console.error('Signup error:', error);
+      setError('Unable to connect to server. Please check your backend.');
     } finally {
       setLoading(false);
     }
@@ -51,7 +70,10 @@ const response = await fetch('https://fitnova-backend-vv6q.onrender.com/api/regi
   return (
     <div className="auth-page-container">
       <div className="auth-card">
-        <h1 className="brand-name" style={{ fontSize: '32px', fontWeight: '900', letterSpacing: '1px' }}>
+        <h1
+          className="brand-name"
+          style={{ fontSize: '32px', fontWeight: '900', letterSpacing: '1px' }}
+        >
           FIT<span style={{ color: '#8B2E2E' }}>NOVA</span>
         </h1>
 
@@ -59,32 +81,37 @@ const response = await fetch('https://fitnova-backend-vv6q.onrender.com/api/regi
           CREATE ACCOUNT
         </p>
 
+        {error && <p style={{ color: 'red', fontSize: '12px' }}>{error}</p>}
+
         <form onSubmit={handleSignup}>
           <input
             type="text"
+            name="fullName"
             placeholder="Full Name"
             className="auth-input"
             required
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={formData.fullName}
+            onChange={handleChange}
           />
 
           <input
             type="email"
+            name="email"
             placeholder="Email"
             className="auth-input"
             required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={formData.email}
+            onChange={handleChange}
           />
 
           <input
             type="password"
+            name="password"
             placeholder="Password (Min 6 chars)"
             className="auth-input"
             required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={formData.password}
+            onChange={handleChange}
           />
 
           <button type="submit" className="auth-button" disabled={loading}>
