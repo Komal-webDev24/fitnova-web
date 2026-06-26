@@ -1,47 +1,84 @@
-import React, { useState } from 'react'; // 1. useState add kiya
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import '../styles/Auth.css';
 
 const Login = () => {
   const navigate = useNavigate();
-  // 2. State banayi taaki input se naam pakad sakein
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-  // 3. Handle Login Function
-  const handleLogin = (e) => {
-  e.preventDefault();
-  const nameFromEmail = email.split('@')[0]; 
-  const finalName = nameFromEmail.charAt(0).toUpperCase() + nameFromEmail.slice(1);
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError('');
 
-  // Sirf ye ek line kafi hai sabke liye
-  localStorage.setItem('userName', finalName); 
-  
-  navigate('/welcome');
-};
+    try {
+    // Naya:
+const response = await fetch('https://fitnova-backend-vv6q.onrender.com/api/login', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ email, password })
+});
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem('userId', data.user.id);
+        localStorage.setItem('userName', data.user.fullName);
+        localStorage.setItem('userEmail', data.user.email);
+        localStorage.setItem('profileComplete', String(data.user.profileComplete));
+
+        if (data.user.profileComplete) {
+          navigate('/dashboard');
+        } else {
+          navigate('/profile-setup');
+        }
+      } else {
+        setError(data.error || 'Login failed');
+      }
+    } catch (err) {
+      console.error('Login error:', err);
+      setError('Server se connect nahi ho paya. Backend check karo.');
+    }
+  };
+
   return (
     <div className="auth-page-container">
       <div className="auth-card">
-        <h1 className="brand-name">FIT<span style={{color: '#8B2E2E'}}>NOVA</span></h1>
-        <p style={{color: '#666', fontSize: '10px', fontWeight: 'bold', letterSpacing: '2px', marginBottom: '40px'}}>
-          WELCOME BACK
-        </p>
-        
-        {/* 6. Form mein handleLogin function call kiya */}
+        <h1>
+          <span style={{ color: '#f0e5e5' }}>FIT</span>
+          <span style={{ color: '#8B2E2E' }}>NOVA</span>
+        </h1>
+
+        {error && <p style={{ color: 'red', fontSize: '12px' }}>{error}</p>}
+
         <form onSubmit={handleLogin}>
-          <input 
-            type="email" 
-            placeholder="Email" 
-            className="auth-input" 
-            required 
+          <input
+            type="email"
+            placeholder="Email"
+            className="auth-input"
+            required
             value={email}
-            onChange={(e) => setEmail(e.target.value)} // Email update karne ke liye
+            onChange={(e) => setEmail(e.target.value)}
           />
-          <input type="password" placeholder="Password" className="auth-input" required />
-          <button type="submit" className="auth-button">Login Now</button>
+
+          <input
+            type="password"
+            placeholder="Password"
+            className="auth-input"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
+          <button type="submit" className="auth-button">
+            Login Now
+          </button>
+          <p>Don't have an account? <Link to="/signup">Sign Up here</Link></p>
         </form>
-        
-        <p style={{marginTop: '30px', fontSize: '12px', color: '#888'}}>
-          New here? <span style={{color: '#8B2E2E', cursor: 'pointer'}} onClick={() => navigate('/signup')}>Sign Up</span>
+
+        <p>
+          Naye ho? <Link to="/signup">Signup karo</Link>
         </p>
       </div>
     </div>

@@ -38,7 +38,8 @@ const Dashboard = () => {
 
   try {
     // Sirf EK baar fetch likhein
-    const response = await fetch(`https://fitnova-backend-vv6q.onrender.com/api/user/${userId}`);
+    // Naya:
+const response = await fetch(`https://fitnova-backend-vv6q.onrender.com/api/user/${userId}`);
     
     if (!response.ok) {
       throw new Error('Failed to fetch user data');
