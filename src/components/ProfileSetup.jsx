@@ -4,11 +4,7 @@ import '../styles/ProfileSetup.css';
 
 const ProfileSetup = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    weight: '',
-    height: '',
-    fitnessGoal: ''
-  });
+  const [formData, setFormData] = useState({ weight: '', height: '', fitnessGoal: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -17,14 +13,8 @@ const ProfileSetup = () => {
   const userId = localStorage.getItem('userId');
 
   useEffect(() => {
-    if (!userId) {
-      navigate('/signup');
-    }
+    if (!userId) navigate('/signup');
   }, [userId, navigate]);
-
-  const sanitizeInput = (value) => {
-    return typeof value === 'string' ? value.trim().replace(/[<>]/g, '') : value;
-  };
 
   const validateForm = () => {
     const errors = {};
@@ -37,46 +27,36 @@ const ProfileSetup = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: sanitizeInput(value) }));
-    if (validationErrors[name]) {
-      setValidationErrors(prev => ({ ...prev, [name]: '' }));
-    }
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
- const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
-    // Yahan console.log karke check karo ki ID kya aa rahi hai
-    const idFromStorage = localStorage.getItem('userId');
-    console.log("LocalStorage se mili ID:", idFromStorage); 
-
-    if (!idFromStorage) {
-        setError("User login nahi hai! Please login karein.");
-        return;
-    }
-
     setLoading(true);
+    setError('');
+
     try {
-        const response = await fetch('https://fitnova-backend-vv6q.onrender.com/api/profile-setup', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                userId: idFromStorage, // Yahan 'idFromStorage' use karein
-                weight: parseFloat(formData.weight),
-                height: parseFloat(formData.height),
-                fitnessGoal: formData.fitnessGoal 
-            }),
-        });
-        // ... baaki ka code
+      const response = await fetch('https://fitnova-backend-vv6q.onrender.com/api/profile-setup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: userId,
+          weight: parseFloat(formData.weight),
+          height: parseFloat(formData.height),
+          fitnessGoal: formData.fitnessGoal
+        }),
+      });
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Failed to setup profile');
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to setup profile');
+      }
 
-      localStorage.setItem('userWeight', formData.weight);
       localStorage.setItem('profileComplete', 'true');
       setSuccess(true);
-      
       setTimeout(() => navigate('/dashboard'), 1500);
     } catch (err) {
       setError(err.message);
@@ -94,10 +74,10 @@ const ProfileSetup = () => {
           {success && <div className="success-banner">✓ Profile saved!</div>}
           
           <input type="number" name="weight" value={formData.weight} onChange={handleChange} placeholder="Weight (kg)" className="form-input" />
-          {validationErrors.weight && <span>{validationErrors.weight}</span>}
+          {validationErrors.weight && <span style={{color: 'red'}}>{validationErrors.weight}</span>}
           
           <input type="number" name="height" value={formData.height} onChange={handleChange} placeholder="Height (cm)" className="form-input" />
-          {validationErrors.height && <span>{validationErrors.height}</span>}
+          {validationErrors.height && <span style={{color: 'red'}}>{validationErrors.height}</span>}
           
           <select name="fitnessGoal" value={formData.fitnessGoal} onChange={handleChange} className="form-select">
             <option value="">Select your goal</option>
@@ -105,6 +85,7 @@ const ProfileSetup = () => {
             <option value="Weight Loss">Weight Loss</option>
             <option value="Stay Fit">Stay Fit</option>
           </select>
+          {validationErrors.fitnessGoal && <span style={{color: 'red'}}>{validationErrors.fitnessGoal}</span>}
           
           <button type="submit" disabled={loading}>{loading ? 'Saving...' : 'SAVE & CONTINUE →'}</button>
         </form>
