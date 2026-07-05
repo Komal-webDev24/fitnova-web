@@ -43,27 +43,32 @@ const ProfileSetup = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
+ const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
-    setLoading(true);
-    setError('');
-    
-    try {
-      const storedUserId = localStorage.getItem('userId');
-      if (!storedUserId) throw new Error("User session expired! Please login again.");
+    // Yahan console.log karke check karo ki ID kya aa rahi hai
+    const idFromStorage = localStorage.getItem('userId');
+    console.log("LocalStorage se mili ID:", idFromStorage); 
 
-      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL || 'https://fitnova-backend-vv6q.onrender.com'}/api/profile-setup`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: storedUserId,
-          weight: parseFloat(formData.weight),
-          height: parseFloat(formData.height),
-          fitnessGoal: formData.fitnessGoal
-        }),
-      });
+    if (!idFromStorage) {
+        setError("User login nahi hai! Please login karein.");
+        return;
+    }
+
+    setLoading(true);
+    try {
+        const response = await fetch('https://fitnova-backend-vv6q.onrender.com/api/profile-setup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                userId: idFromStorage, // Yahan 'idFromStorage' use karein
+                weight: parseFloat(formData.weight),
+                height: parseFloat(formData.height),
+                fitnessGoal: formData.fitnessGoal 
+            }),
+        });
+        // ... baaki ka code
 
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to setup profile');

@@ -43,25 +43,23 @@ const Signup = () => {
         }),
       });
 
-      const contentType = response.headers.get('content-type') || '';
-      const data = contentType.includes('application/json')
-        ? await response.json()
-        : await response.text();
+      const data = await response.json();
 
       if (!response.ok) {
-        setError(data?.error || 'Signup failed. Please try again.');
-        return;
+        throw new Error(data.error || 'Signup failed. Please try again.');
       }
 
+      // LocalStorage mein data sahi se store karein
       localStorage.setItem('userName', data.user.fullName);
       localStorage.setItem('userEmail', data.user.email);
-      localStorage.setItem('userId', data.user.id);
-      localStorage.setItem('profileComplete', String(data.user.profileComplete));
+      // Backend se jo id aati hai wo '_id' hoti hai
+      localStorage.setItem('userId', data.user._id || data.user.id);
+      localStorage.setItem('profileComplete', String(data.user.profileComplete || false));
 
       navigate('/profile-setup');
-    } catch (error) {
-      console.error('Signup error:', error);
-      setError('Unable to connect to server. Please check your backend.');
+    } catch (err) {
+      console.error('Signup error:', err);
+      setError(err.message || 'Unable to connect to server. Please check your backend.');
     } finally {
       setLoading(false);
     }
@@ -70,10 +68,7 @@ const Signup = () => {
   return (
     <div className="auth-page-container">
       <div className="auth-card">
-        <h1
-          className="brand-name"
-          style={{ fontSize: '32px', fontWeight: '900', letterSpacing: '1px' }}
-        >
+        <h1 className="brand-name" style={{ fontSize: '32px', fontWeight: '900', letterSpacing: '1px' }}>
           FIT<span style={{ color: '#8B2E2E' }}>NOVA</span>
         </h1>
 
