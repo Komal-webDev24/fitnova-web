@@ -15,7 +15,11 @@ const Signup = () => {
   const handleSignup = async (e) => {
     e.preventDefault();
     setError('');
-    if (formData.password.length < 6) return setError('Password must be at least 6 chars!');
+    
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters!');
+      return;
+    }
     
     setLoading(true);
     try {
@@ -28,7 +32,6 @@ const Signup = () => {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Signup failed');
 
-      // ID ko store karein
       localStorage.setItem('userId', data.user._id);
       navigate('/profile-setup');
     } catch (err) {
@@ -39,18 +42,52 @@ const Signup = () => {
   };
 
   return (
-    <div className="auth-page-container">
+    <div className="auth-container">
       <div className="auth-card">
         <h1>FIT<span>NOVA</span></h1>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        <form onSubmit={handleSignup}>
-          <input type="text" name="fullName" placeholder="Full Name" required onChange={handleChange} />
-          <input type="email" name="email" placeholder="Email" required onChange={handleChange} />
-          <input type="password" name="password" placeholder="Password" required onChange={handleChange} />
-          <button type="submit" disabled={loading}>{loading ? '...' : 'Get Started'}</button>
+        
+        {error && <p className="error-message" style={{ color: 'red' }}>{error}</p>}
+        
+        <form onSubmit={handleSignup} className="auth-form">
+          <input 
+            type="text" 
+            name="fullName" 
+            placeholder="Full Name" 
+            required 
+            onChange={handleChange} 
+            className="auth-input" 
+          />
+          <input 
+            type="email" 
+            name="email" 
+            placeholder="Email" 
+            required 
+            onChange={handleChange} 
+            className="auth-input" 
+          />
+          <input 
+            type="password" 
+            name="password" 
+            placeholder="Password" 
+            required 
+            onChange={handleChange} 
+            className="auth-input" 
+          />
+          <button 
+            type="submit" 
+            className="auth-button" 
+            disabled={loading}
+          >
+            {loading ? 'Processing...' : 'SIGN UP'}
+          </button>
         </form>
+
+        <p className="auth-footer">
+          Already have an account? <Link to="/login">Login Now</Link>
+        </p>
       </div>
     </div>
   );
 };
+
 export default Signup;
