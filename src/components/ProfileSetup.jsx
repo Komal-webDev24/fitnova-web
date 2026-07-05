@@ -10,11 +10,14 @@ const ProfileSetup = () => {
   const [success, setSuccess] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
 
-  const userId = localStorage.getItem('userId');
-
+  // Fix: Initial load par check karein ki user logged in hai ya nahi
   useEffect(() => {
-    if (!userId) navigate('/signup');
-  }, [userId, navigate]);
+    const userId = localStorage.getItem('userId');
+    // Agar userId null hai, "undefined" string hai, ya empty hai, toh redirect karein
+    if (!userId || userId === "undefined" || userId === "" || userId === "null") {
+      navigate('/signup');
+    }
+  }, [navigate]);
 
   const validateForm = () => {
     const errors = {};
@@ -34,6 +37,7 @@ const ProfileSetup = () => {
     e.preventDefault();
     if (!validateForm()) return;
 
+    const userId = localStorage.getItem('userId');
     setLoading(true);
     setError('');
 
@@ -70,14 +74,14 @@ const ProfileSetup = () => {
       <div className="profile-setup-card">
         <h1 className="setup-title">Set Your Fitness Goals</h1>
         <form onSubmit={handleSubmit} className="profile-setup-form">
-          {error && <div className="error-banner">⚠️ {error}</div>}
-          {success && <div className="success-banner">✓ Profile saved!</div>}
+          {error && <div className="error-banner" style={{color: 'red'}}>⚠️ {error}</div>}
+          {success && <div className="success-banner" style={{color: 'green'}}>✓ Profile saved!</div>}
           
           <input type="number" name="weight" value={formData.weight} onChange={handleChange} placeholder="Weight (kg)" className="form-input" />
-          {validationErrors.weight && <span style={{color: 'red'}}>{validationErrors.weight}</span>}
+          {validationErrors.weight && <span style={{color: 'red', fontSize: '10px'}}>{validationErrors.weight}</span>}
           
           <input type="number" name="height" value={formData.height} onChange={handleChange} placeholder="Height (cm)" className="form-input" />
-          {validationErrors.height && <span style={{color: 'red'}}>{validationErrors.height}</span>}
+          {validationErrors.height && <span style={{color: 'red', fontSize: '10px'}}>{validationErrors.height}</span>}
           
           <select name="fitnessGoal" value={formData.fitnessGoal} onChange={handleChange} className="form-select">
             <option value="">Select your goal</option>
@@ -85,9 +89,11 @@ const ProfileSetup = () => {
             <option value="Weight Loss">Weight Loss</option>
             <option value="Stay Fit">Stay Fit</option>
           </select>
-          {validationErrors.fitnessGoal && <span style={{color: 'red'}}>{validationErrors.fitnessGoal}</span>}
+          {validationErrors.fitnessGoal && <span style={{color: 'red', fontSize: '10px'}}>{validationErrors.fitnessGoal}</span>}
           
-          <button type="submit" disabled={loading}>{loading ? 'Saving...' : 'SAVE & CONTINUE →'}</button>
+          <button type="submit" disabled={loading} className="auth-button">
+            {loading ? 'Saving...' : 'SAVE & CONTINUE →'}
+          </button>
         </form>
       </div>
     </div>
