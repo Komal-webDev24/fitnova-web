@@ -4,10 +4,17 @@ import '../styles/Auth.css';
 
 const Login = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -21,22 +28,18 @@ const Login = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email: email.trim(),
-          password,
+          email: formData.email.trim(),
+          password: formData.password,
         }),
       });
 
-      const contentType = response.headers.get('content-type') || '';
-      const data = contentType.includes('application/json')
-        ? await response.json()
-        : await response.text();
+      const data = await response.json();
 
       if (!response.ok) {
-        setError(data?.error || 'Login failed');
-        return;
+        throw new Error(data.error || 'Login failed');
       }
 
-      localStorage.setItem('userId', data.user.id);
+      localStorage.setItem('userId', data.user._id);
       localStorage.setItem('userName', data.user.fullName);
       localStorage.setItem('userEmail', data.user.email);
       localStorage.setItem('profileComplete', String(data.user.profileComplete));
@@ -47,53 +50,50 @@ const Login = () => {
         navigate('/profile-setup');
       }
     } catch (err) {
-      console.error('Login error:', err);
-      setError('Server se connect nahi ho paya. Backend check karo.');
+      setError(err.message || 'Server error');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="auth-page-container">
+    <div className="auth-container auth-page">
       <div className="auth-card">
         <h1>
-          <span style={{ color: '#f0e5e5' }}>FIT</span>
+          <span style={{ color: '#111827' }}>FIT</span>
           <span style={{ color: '#8B2E2E' }}>NOVA</span>
         </h1>
 
-        {error && <p style={{ color: 'red', fontSize: '12px' }}>{error}</p>}
+        {error && <div className="error-message">{error}</div>}
 
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleLogin} className="auth-form">
           <input
             type="email"
+            name="email"
             placeholder="Email"
             className="auth-input"
             required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={formData.email}
+            onChange={handleChange}
           />
 
           <input
             type="password"
+            name="password"
             placeholder="Password"
             className="auth-input"
             required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={formData.password}
+            onChange={handleChange}
           />
 
           <button type="submit" className="auth-button" disabled={loading}>
-            {loading ? 'Logging in...' : 'Login Now'}
+            {loading ? 'Logging in...' : 'Login'}
           </button>
-
-          <p>
-            Don't have an account? <Link to="/signup">Sign Up here</Link>
-          </p>
         </form>
 
-        <p>
-          Naye ho? <Link to="/signup">Signup karo</Link>
+        <p className="auth-footer">
+          Don&apos;t have an account? <Link to="/signup">Sign Up</Link>
         </p>
       </div>
     </div>

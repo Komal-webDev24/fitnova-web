@@ -1,24 +1,22 @@
-// src/components/Dashboard.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Dashboard.css';
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  
+
   const [userName, setUserName] = useState('User');
   const [userStats, setUserStats] = useState({
     weight: null,
     height: null,
     fitnessGoal: null,
-    bmi: null
+    bmi: null,
   });
-  
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const userId = localStorage.getItem('userId') || '';
+  const userId = localStorage.getItem('userId');
 
-  // Calculate BMI helper
   const calculateBMI = (weight, height) => {
     if (!weight || !height) return null;
     const heightInMeters = height / 100;
@@ -27,45 +25,45 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    if (!userId) {
-      navigate('/signup');
+    if (!userId || userId === 'undefined' || userId === 'null') {
+      navigate('/login');
       return;
     }
 
-  const fetchUserData = async () => {
-  setLoading(true);
-  setError('');
+    const fetchUserData = async () => {
+      setLoading(true);
+      setError('');
 
-  try {
-    // Sirf EK baar fetch likhein
-    // Naya:
-const response = await fetch(`https://fitnova-backend-vv6q.onrender.com/api/user/${userId}`);
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch user data');
-    }
+      try {
+        const response = await fetch(
+          `https://fitnova-backend-vv6q.onrender.com/api/user/${userId}`
+        );
 
-    const data = await response.json();
+        const data = await response.json();
 
-    // Data milne par yahan update karein
-    if (data.user) {
-      setUserName(data.user.fullName);
-      localStorage.setItem('userName', data.user.fullName);
-      
-      setUserStats({
-        weight: data.user.weight,
-        height: data.user.height,
-        fitnessGoal: data.user.fitnessGoal,
-        bmi: data.user.bmi || calculateBMI(data.user.weight, data.user.height)
-      });
-    }
-  } catch (err) {
-    console.error('Error:', err);
-    setError('Unable to load user data.');
-  } finally {
-    setLoading(false);
-  }
-};
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to fetch user data');
+        }
+
+        if (data.user) {
+          setUserName(data.user.fullName || 'User');
+          localStorage.setItem('userName', data.user.fullName || '');
+          localStorage.setItem('userEmail', data.user.email || '');
+          localStorage.setItem('profileComplete', String(data.user.profileComplete || false));
+
+          setUserStats({
+            weight: data.user.weight ?? null,
+            height: data.user.height ?? null,
+            fitnessGoal: data.user.fitnessGoal ?? null,
+            bmi: calculateBMI(data.user.weight, data.user.height),
+          });
+        }
+      } catch (err) {
+        setError(err.message || 'Unable to load user data.');
+      } finally {
+        setLoading(false);
+      }
+    };
 
     fetchUserData();
   }, [userId, navigate]);
@@ -92,10 +90,38 @@ const response = await fetch(`https://fitnova-backend-vv6q.onrender.com/api/user
   };
 
   const dashboardSections = [
-    { id: 1, icon: '💪', title: 'Workout Plans', desc: 'Pushups, Strength & More', path: '/workouts', bgImage: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80' },
-    { id: 2, icon: '📈', title: 'Track Progress', desc: 'Calories & Weekly Goals', path: '/progress', bgImage: 'https://images.unsplash.com/photo-1596357395104-ba989e72b5ec?auto=format&fit=crop&w=800&q=80' },
-    { id: 3, icon: '⚽', title: 'Sports Activity', desc: 'Football, Yoga, Cycling', path: '/sports', bgImage: 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=800&q=80' },
-    { id: 4, icon: '🍎', title: 'Diet & Meal', desc: 'Meal Plans & Hydration', path: '/diet', bgImage: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80' },
+    {
+      id: 1,
+      icon: '💪',
+      title: 'Workout Plans',
+      desc: 'Pushups, Strength & More',
+      path: '/workouts',
+      bgImage: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80',
+    },
+    {
+      id: 2,
+      icon: '📈',
+      title: 'Track Progress',
+      desc: 'Calories & Weekly Goals',
+      path: '/progress',
+      bgImage: 'https://images.unsplash.com/photo-1596357395104-ba989e72b5ec?auto=format&fit=crop&w=800&q=80',
+    },
+    {
+      id: 3,
+      icon: '⚽',
+      title: 'Sports Activity',
+      desc: 'Football, Yoga, Cycling',
+      path: '/sports',
+      bgImage: 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=800&q=80',
+    },
+    {
+      id: 4,
+      icon: '🍎',
+      title: 'Diet & Meal',
+      desc: 'Meal Plans & Hydration',
+      path: '/diet',
+      bgImage: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80',
+    },
   ];
 
   const bmiCategory = getBMICategory(userStats.bmi);
@@ -105,38 +131,83 @@ const response = await fetch(`https://fitnova-backend-vv6q.onrender.com/api/user
       <div className="dashboard-header">
         <div className="header-content">
           <p className="greeting">{getGreeting()}</p>
-          <h1 className="user-name">{userName.toUpperCase()} 👋</h1>
+          <h1 className="user-name">{(userName || 'User').toUpperCase()} 👋</h1>
         </div>
-        <button onClick={handleLogout} className="logout-btn">LOGOUT</button>
+        <button onClick={handleLogout} className="logout-btn">
+          LOGOUT
+        </button>
       </div>
 
-      {error && <div className="error-banner" role="alert"><span className="error-icon">⚠️</span> {error}</div>}
+      {error && (
+        <div className="error-banner" role="alert">
+          <span className="error-icon">⚠️</span> {error}
+        </div>
+      )}
 
       <div className="stats-card">
         <div className="stats-header">
           <h2 className="stats-title">Your Stats</h2>
           {loading && <span className="loading-text">Loading...</span>}
         </div>
-        
+
         {loading ? (
-          <div className="stats-loading"><div className="skeleton-loader"></div><div className="skeleton-loader"></div><div className="skeleton-loader"></div></div>
+          <div className="stats-loading">
+            <div className="skeleton-loader"></div>
+            <div className="skeleton-loader"></div>
+            <div className="skeleton-loader"></div>
+            <div className="skeleton-loader"></div>
+          </div>
         ) : (
           <div className="stats-grid">
-            <div className="stat-card"><div className="stat-icon">⚖️</div><p className="stat-label">Weight</p><p className="stat-value">{userStats.weight ? `${userStats.weight} kg` : 'Not set'}</p></div>
-            <div className="stat-card"><div className="stat-icon">📏</div><p className="stat-label">Height</p><p className="stat-value">{userStats.height ? `${userStats.height} cm` : 'Not set'}</p></div>
-            <div className="stat-card"><div className="stat-icon">📊</div><p className="stat-label">BMI</p><p className="stat-value" style={{ color: bmiCategory?.color }}>{userStats.bmi || 'N/A'}</p></div>
-            <div className="stat-card"><div className="stat-icon">🎯</div><p className="stat-label">Goal</p><p className="stat-value">{userStats.fitnessGoal || 'Not set'}</p></div>
+            <div className="stat-card">
+              <div className="stat-icon">⚖️</div>
+              <p className="stat-label">Weight</p>
+              <p className="stat-value">{userStats.weight ? `${userStats.weight} kg` : 'Not set'}</p>
+            </div>
+
+            <div className="stat-card">
+              <div className="stat-icon">📏</div>
+              <p className="stat-label">Height</p>
+              <p className="stat-value">{userStats.height ? `${userStats.height} cm` : 'Not set'}</p>
+            </div>
+
+            <div className="stat-card">
+              <div className="stat-icon">📊</div>
+              <p className="stat-label">BMI</p>
+              <p className="stat-value" style={{ color: bmiCategory?.color || '#fff' }}>
+                {userStats.bmi || 'N/A'}
+              </p>
+              {bmiCategory && <small>{bmiCategory.text}</small>}
+            </div>
+
+            <div className="stat-card">
+              <div className="stat-icon">🎯</div>
+              <p className="stat-label">Goal</p>
+              <p className="stat-value">{userStats.fitnessGoal || 'Not set'}</p>
+            </div>
           </div>
         )}
       </div>
 
       <div className="dashboard-grid">
         {dashboardSections.map((section) => (
-          <div key={section.id} className="dashboard-card" onClick={() => navigate(section.path)}>
-            <div className="card-background" style={{ backgroundImage: `url(${section.bgImage})` }} />
+          <div
+            key={section.id}
+            className="dashboard-card"
+            onClick={() => navigate(section.path)}
+            role="button"
+            tabIndex={0}
+          >
+            <div
+              className="card-background"
+              style={{ backgroundImage: `url(${section.bgImage})` }}
+            />
             <div className="card-content">
               <div className="card-icon">{section.icon}</div>
-              <div className="card-text"><h3>{section.title}</h3><p>{section.desc}</p></div>
+              <div className="card-text">
+                <h3>{section.title}</h3>
+                <p>{section.desc}</p>
+              </div>
             </div>
           </div>
         ))}
